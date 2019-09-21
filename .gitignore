@@ -1,0 +1,11 @@
+*.pyc
+/build/
+/dist/
+/*.egg-info
+/*.egg
+/*.eggs
+/.cachevenv
+venv
+unrarsrc
+build
+.vscode
