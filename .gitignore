@@ -9,3 +9,4 @@ venv
 unrarsrc
 build
 .vscode
+.pytest_cache/
