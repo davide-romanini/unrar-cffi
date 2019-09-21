@@ -1,6 +1,6 @@
 all: unrarsrc
 	# generate header file from dll.hpp for cffi cdef()
-	cd unrarsrc; cc -P -include raros.hpp -U __cplusplus -E dll.hpp > dll.preprocessed.h
+	cc -I unrarsrc -P -U __cplusplus -E unrarlib_py.h > unrarlib_py.preprocessed.h
 	python setup.py build_ext
 
 unrarsrc:
