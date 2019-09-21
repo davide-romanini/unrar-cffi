@@ -6,15 +6,13 @@ from ._unrarlib.lib import \
     RARSetCallbackPtr, \
     RARProcessFileW, \
     UCM_PROCESSDATA, \
-    PyUNRARCALLBACKStub
-
-ERAR_END_ARCHIVE = 10
-RAR_OM_LIST_INCSPLIT = 2
-RAR_OM_EXTRACT = 1
-RAR_SKIP = 0
-RAR_TEST = 1
-RAR_EXTRACT = 2
-SUCCESS = 0
+    PyUNRARCALLBACKStub, \
+    C_RAR_OM_LIST_INCSPLIT, \
+    C_RAR_OM_EXTRACT, \
+    C_RAR_SKIP, \
+    C_RAR_TEST, \
+    C_RAR_EXTRACT, \
+    C_ERAR_SUCCESS
 
 @ffi.def_extern('PyUNRARCALLBACKStub')
 def PyUNRARCALLBACKSkeleton(msg, user_data, p1, p2):    
@@ -24,28 +22,28 @@ def PyUNRARCALLBACKSkeleton(msg, user_data, p1, p2):
 class RarArchive(object):
     @staticmethod
     def open(filename):
-        return RarArchive(filename, RAR_OM_LIST_INCSPLIT)
+        return RarArchive(filename, C_RAR_OM_LIST_INCSPLIT)
         
     @staticmethod
     def open_to_extract(filename):
-        return RarArchive(filename, RAR_OM_EXTRACT)
+        return RarArchive(filename, C_RAR_OM_EXTRACT)
 
     def __init__(self, filename, mode):
         archive = RAROpenArchiveDataEx(filename, mode)
         self.handle = RAROpenArchiveEx(archive)
-        assert archive.OpenResult == SUCCESS
+        assert archive.OpenResult == C_ERAR_SUCCESS
 
     def __enter__(self):
         return self
 
     def __exit__(self, type, value, traceback):
         result = RARCloseArchive(self.handle)
-        assert result == SUCCESS
+        assert result == C_ERAR_SUCCESS
 
     def headers(self):
         header_data = RARHeaderDataEx()
         res = RARReadHeaderEx(self.handle, header_data)    
-        while res == SUCCESS:
+        while res == C_ERAR_SUCCESS:
             yield RarHeader(self.handle, header_data)
             header_data = RARHeaderDataEx()
             res = RARReadHeaderEx(self.handle, header_data)
@@ -60,7 +58,7 @@ class RarHeader(object):
         return ffi.string(self.headerDataEx.FileNameW)
     
     def skip(self):
-        RARProcessFileW(self.handle, RAR_SKIP, ffi.NULL, ffi.NULL)
+        RARProcessFileW(self.handle, C_RAR_SKIP, ffi.NULL, ffi.NULL)
 
     def test(self, callback):
         def wrapper(msg, p1, p2):
@@ -70,7 +68,7 @@ class RarHeader(object):
             return 1
         user_data = ffi.new_handle(wrapper)
         RARSetCallbackPtr(self.handle, PyUNRARCALLBACKStub, user_data)
-        RARProcessFileW(self.handle, RAR_TEST, ffi.NULL, ffi.NULL)
+        RARProcessFileW(self.handle, C_RAR_TEST, ffi.NULL, ffi.NULL)
         RARSetCallbackPtr(self.handle, ffi.NULL, ffi.NULL)
 
 
