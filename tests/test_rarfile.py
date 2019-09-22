@@ -23,6 +23,9 @@ def test_is_rarfile_not_existing():
 def test_rar_namelist(rar):
     assert rar.namelist() == ['test_file.txt', 'test_file2.txt']
 
-def test_rar_read(rar):    
+def test_rar_read(rar):
     assert rar.read('test_file.txt') == b'This is for test.'
     assert rar.read('test_file2.txt') == b'This is another test!\n'
+
+def test_rar_open(rar):
+    assert rar.open('test_file.txt').read() == b'This is for test.'

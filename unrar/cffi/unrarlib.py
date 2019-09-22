@@ -40,7 +40,7 @@ class RarArchive(object):
         result = RARCloseArchive(self.handle)
         assert result == C_ERAR_SUCCESS
 
-    def headers(self):
+    def iterate_headers(self):
         header_data = RARHeaderDataEx()
         res = RARReadHeaderEx(self.handle, header_data)    
         while res == C_ERAR_SUCCESS:

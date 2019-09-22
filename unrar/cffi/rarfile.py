@@ -1,3 +1,4 @@
+import io
 from .unrarlib import RarArchive
 
 def is_rarfile(filename):
@@ -15,26 +16,33 @@ class RarFile(object):
         self.filenames = []
         
         with RarArchive.open(filename) as rar:
-            for header in rar.headers():
+            for header in rar.iterate_headers():
                 self.filenames.append(header.FileNameW)
                 header.skip()
 
     def namelist(self):
         return self.filenames
 
-    def read(self, member):
-        #if isinstance(member, RarInfo):
-        #    member = member.filename
+    def open(self, member):
         with RarArchive.open_to_extract(self.filename) as rar:
-            for header in rar.headers():
+            for header in rar.iterate_headers():
                 if header.FileNameW == member:
-                    processor = RarDataProcessor()
-                    header.test(processor)
-                    return processor.data
+                    callback = InMemoryCollector()
+                    header.test(callback)
+                    return callback.bytes_io
                 header.skip()
 
-class RarDataProcessor:
+    def read(self, member):
+        return self.open(member).read()
+       
+
+class InMemoryCollector:
     def __init__(self):
-        self.data = b''
+        self._data = b''
     def __call__(self, chunk):              
-        self.data += chunk
+        self._data += chunk
+
+    @property
+    def bytes_io(self):
+        return io.BytesIO(self._data)
+    
