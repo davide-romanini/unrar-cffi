@@ -14,17 +14,27 @@ class RarFile(object):
     def __init__(self, filename):
         """Load RAR archive file with mode read only "r"."""
         self.filename = filename
-        self.filenames = []
         self.infos = OrderedDict()
         
         with RarArchive.open_for_metadata(filename) as rar:
             for header in rar.iterate_headers():
                 self.infos[header.FileNameW] = RarInfo(header)
-                self.filenames.append(header.FileNameW)
                 header.skip()
 
     def namelist(self):
-        return self.filenames
+        return list(self.infos.keys())
+
+    def infolist(self):
+        return list(self.infos.values())
+
+    def getinfo(self, filename):
+        return self.infos[filename]
+
+    def printdir(self):
+        raise NotImplementedError()
+    
+    def read(self, member):
+        return self.open(member).read()
 
     def open(self, file_or_info):
         member = file_or_info.filename if isinstance(file_or_info, RarInfo) else file_or_info
@@ -36,9 +46,7 @@ class RarFile(object):
                     return callback.bytes_io
                 header.skip()
         raise ValueError("Cannot open member file %s in rar %s" % (member, self.filename))
-    def read(self, member):
-        return self.open(member).read()
-    
+
     def testrar(self):
         with RarArchive.open_for_processing(self.filename) as rar:
             for header in rar.iterate_headers():
@@ -46,12 +54,6 @@ class RarFile(object):
                     header.test()
                 except BadRarFile:
                     return header.FileNameW
-    
-    def infolist(self):
-        return list(self.infos.values())
-
-    def getinfo(self, filename):
-        return self.infos[filename]
 
 class InMemoryCollector:
     def __init__(self):
@@ -61,8 +63,7 @@ class InMemoryCollector:
 
     @property
     def bytes_io(self):
-        return io.BytesIO(self._data)
-    
+        return io.BytesIO(self._data)    
 
 class RarInfo(object):
     """Class with attributes describing each member in the RAR archive."""
