@@ -26,7 +26,8 @@ class RarFile(object):
     def namelist(self):
         return self.filenames
 
-    def open(self, member):
+    def open(self, file_or_info):
+        member = file_or_info.filename if isinstance(file_or_info, RarInfo) else file_or_info
         with RarArchive.open_for_processing(self.filename) as rar:
             for header in rar.iterate_headers():
                 if header.FileNameW == member:
@@ -34,7 +35,7 @@ class RarFile(object):
                     header.test(callback)
                     return callback.bytes_io
                 header.skip()
-
+        raise ValueError("Cannot open member file %s in rar %s" % (member, self.filename))
     def read(self, member):
         return self.open(member).read()
     

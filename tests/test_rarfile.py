@@ -31,9 +31,13 @@ def test_rar_namelist(rar):
 def test_rar_read(rar):
     assert rar.read('test_file.txt') == b'This is for test.'
     assert rar.read('test_file2.txt') == b'This is another test!\n'
+    assert rar.read(rar.getinfo('test_file2.txt')) == b'This is another test!\n'
 
 def test_rar_open(rar):
     assert rar.open('test_file.txt').read() == b'This is for test.'
+    assert rar.open(rar.getinfo('test_file.txt')).read() == b'This is for test.'
+    with raises(ValueError):
+        rar.open('not_existing')
 
 def test_rar_testrar_good(rar):
     assert rar.testrar() == None
@@ -76,4 +80,4 @@ def test_rar_infolist(rar, info_test_file_txt, info_test_file2_txt):
 def test_rar_getinfo(rar, info_test_file_txt):
     assert rar.getinfo('test_file.txt').__dict__ == info_test_file_txt
     with raises(KeyError):
-        rar.getinfo('not_extisting')
+        rar.getinfo('not_existing')
