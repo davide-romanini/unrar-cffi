@@ -60,6 +60,46 @@ class RarHeader(object):
     def FileNameW(self):
         return ffi.string(self.headerDataEx.FileNameW)
     
+    @property
+    def FileTime(self):
+        return self.headerDataEx.FileTime
+    
+    @property
+    def PackSize(self):
+        return self.headerDataEx.PackSize    
+
+    @property
+    def PackSizeHigh(self):
+        return self.headerDataEx.PackSizeHigh
+
+    @property
+    def UnpSize(self):
+        return self.headerDataEx.UnpSize
+
+    @property
+    def UnpSizeHigh(self):
+        return self.headerDataEx.UnpSizeHigh
+
+    @property
+    def UnpVer(self):
+        return self.headerDataEx.UnpVer
+
+    @property
+    def FileCRC(self):
+        return self.headerDataEx.FileCRC
+
+    @property
+    def Flags(self):
+        return self.headerDataEx.Flags
+
+    @property
+    def HostOS(self):
+        return self.headerDataEx.HostOS
+
+    @property
+    def Method(self):
+        return self.headerDataEx.Method
+
     def skip(self):
         RARProcessFileW(self.handle, C_RAR_SKIP, ffi.NULL, ffi.NULL)
 

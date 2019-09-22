@@ -40,3 +40,29 @@ def test_rar_testrar_good(rar):
 
 def test_rar_testrar_bad(bad_rar):
     assert bad_rar.testrar() == 'test_file.txt'
+
+def test_rar_infolist(rar):
+    info1 = {
+        'filename': 'test_file.txt',
+        'date_time': (2013,4,14,19,3,36),
+        'compress_type': 0x33,
+        'create_system': 3,
+        'extract_version': 29,        
+        'flag_bits': 0,
+        'CRC': 2911469160,
+        'compress_size': 29,
+        'file_size': 17
+    }
+    info2 = {
+        'filename': 'test_file2.txt',
+        'date_time': (2019,9,21,22,47,34),
+        'compress_type': 0x30,
+        'create_system': 3,
+        'extract_version': 29,        
+        'flag_bits': 0,
+        'CRC': 1864074135,
+        'compress_size': 22,
+        'file_size': 22
+    }
+    assert rar.infolist()[0].__dict__ == info1
+    assert rar.infolist()[1].__dict__ == info2
