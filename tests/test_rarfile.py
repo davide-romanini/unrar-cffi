@@ -1,5 +1,5 @@
 from os.path import realpath, dirname, join
-from pytest import fixture
+from pytest import fixture, raises
 from unrar.cffi.rarfile import is_rarfile, RarFile
 
 thisdir = realpath(dirname(__file__))
@@ -41,8 +41,9 @@ def test_rar_testrar_good(rar):
 def test_rar_testrar_bad(bad_rar):
     assert bad_rar.testrar() == 'test_file.txt'
 
-def test_rar_infolist(rar):
-    info1 = {
+@fixture
+def info_test_file_txt():
+    return {
         'filename': 'test_file.txt',
         'date_time': (2013,4,14,19,3,36),
         'compress_type': 0x33,
@@ -53,7 +54,10 @@ def test_rar_infolist(rar):
         'compress_size': 29,
         'file_size': 17
     }
-    info2 = {
+
+@fixture
+def info_test_file2_txt():
+    return {
         'filename': 'test_file2.txt',
         'date_time': (2019,9,21,22,47,34),
         'compress_type': 0x30,
@@ -64,5 +68,12 @@ def test_rar_infolist(rar):
         'compress_size': 22,
         'file_size': 22
     }
-    assert rar.infolist()[0].__dict__ == info1
-    assert rar.infolist()[1].__dict__ == info2
+
+def test_rar_infolist(rar, info_test_file_txt, info_test_file2_txt):
+    assert rar.infolist()[0].__dict__ == info_test_file_txt
+    assert rar.infolist()[1].__dict__ == info_test_file2_txt
+
+def test_rar_getinfo(rar, info_test_file_txt):
+    assert rar.getinfo('test_file.txt').__dict__ == info_test_file_txt
+    with raises(KeyError):
+        rar.getinfo('not_extisting')

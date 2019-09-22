@@ -49,6 +49,9 @@ class RarFile(object):
     def infolist(self):
         return list(self.infos.values())
 
+    def getinfo(self, filename):
+        return self.infos[filename]
+
 class InMemoryCollector:
     def __init__(self):
         self._data = b''
