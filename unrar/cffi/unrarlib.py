@@ -21,11 +21,11 @@ def PyUNRARCALLBACKSkeleton(msg, user_data, p1, p2):
 
 class RarArchive(object):
     @staticmethod
-    def open(filename):
+    def open_for_metadata(filename):
         return RarArchive(filename, C_RAR_OM_LIST_INCSPLIT)
         
     @staticmethod
-    def open_to_extract(filename):
+    def open_for_processing(filename):
         return RarArchive(filename, C_RAR_OM_EXTRACT)
 
     def __init__(self, filename, mode):
@@ -48,6 +48,9 @@ class RarArchive(object):
             header_data = RARHeaderDataEx()
             res = RARReadHeaderEx(self.handle, header_data)
 
+def null_callback(*args):
+    pass
+
 class RarHeader(object):
     def __init__(self, handle, headerDataEx):
         self.handle = handle
@@ -60,7 +63,7 @@ class RarHeader(object):
     def skip(self):
         RARProcessFileW(self.handle, C_RAR_SKIP, ffi.NULL, ffi.NULL)
 
-    def test(self, callback):
+    def test(self, callback = null_callback):
         def wrapper(msg, p1, p2):
             if msg == UCM_PROCESSDATA:
                 chunk = ffi.buffer(ffi.cast("char *", p1), p2)                
@@ -68,8 +71,13 @@ class RarHeader(object):
             return 1
         user_data = ffi.new_handle(wrapper)
         RARSetCallbackPtr(self.handle, PyUNRARCALLBACKStub, user_data)
-        RARProcessFileW(self.handle, C_RAR_TEST, ffi.NULL, ffi.NULL)
+        result = RARProcessFileW(self.handle, C_RAR_TEST, ffi.NULL, ffi.NULL)
         RARSetCallbackPtr(self.handle, ffi.NULL, ffi.NULL)
+        if result != C_ERAR_SUCCESS:
+            raise BadRarFile("Rarfile corrupted: error code is %d" % result)
+        
+class BadRarFile(Exception):
+    pass
 
 
 def RAROpenArchiveDataEx(filename, mode):

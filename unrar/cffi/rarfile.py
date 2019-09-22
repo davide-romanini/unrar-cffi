@@ -1,10 +1,10 @@
 import io
-from .unrarlib import RarArchive
+from .unrarlib import RarArchive, BadRarFile
 
 def is_rarfile(filename):
     """Return true if file is a valid RAR file."""
     try:
-        with RarArchive.open(filename):        
+        with RarArchive.open_for_metadata(filename):        
             return True
     except:
         return False
@@ -15,7 +15,7 @@ class RarFile(object):
         self.filename = filename
         self.filenames = []
         
-        with RarArchive.open(filename) as rar:
+        with RarArchive.open_for_metadata(filename) as rar:
             for header in rar.iterate_headers():
                 self.filenames.append(header.FileNameW)
                 header.skip()
@@ -24,7 +24,7 @@ class RarFile(object):
         return self.filenames
 
     def open(self, member):
-        with RarArchive.open_to_extract(self.filename) as rar:
+        with RarArchive.open_for_processing(self.filename) as rar:
             for header in rar.iterate_headers():
                 if header.FileNameW == member:
                     callback = InMemoryCollector()
@@ -34,7 +34,14 @@ class RarFile(object):
 
     def read(self, member):
         return self.open(member).read()
-       
+    
+    def testrar(self):
+        with RarArchive.open_for_processing(self.filename) as rar:
+            for header in rar.iterate_headers():
+                try:
+                    header.test()
+                except BadRarFile:
+                    return header.FileNameW
 
 class InMemoryCollector:
     def __init__(self):

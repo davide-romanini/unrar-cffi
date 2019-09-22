@@ -8,6 +8,11 @@ thisdir = realpath(dirname(__file__))
 def rar():
     return RarFile(join(thisdir, 'test_rar.rar'))
 
+@fixture
+def bad_rar():
+    return RarFile(join(thisdir, 'test_corrupted.rar'))
+
+
 def test_is_rarfile_good():
     good_rar = join(thisdir, 'test_rar.rar')
     assert is_rarfile(good_rar) == True
@@ -29,3 +34,9 @@ def test_rar_read(rar):
 
 def test_rar_open(rar):
     assert rar.open('test_file.txt').read() == b'This is for test.'
+
+def test_rar_testrar_good(rar):
+    assert rar.testrar() == None
+
+def test_rar_testrar_bad(bad_rar):
+    assert bad_rar.testrar() == 'test_file.txt'
