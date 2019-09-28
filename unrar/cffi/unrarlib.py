@@ -12,7 +12,7 @@ from ._unrarlib.lib import \
     C_RAR_SKIP, \
     C_RAR_TEST, \
     C_RAR_EXTRACT, \
-    C_ERAR_SUCCESS
+    C_ERAR_SUCCESS    
 
 @ffi.def_extern('PyUNRARCALLBACKStub')
 def PyUNRARCALLBACKSkeleton(msg, user_data, p1, p2):    
@@ -20,6 +20,7 @@ def PyUNRARCALLBACKSkeleton(msg, user_data, p1, p2):
     return callback(msg, p1, p2)
 
 class RarArchive(object):
+
     @staticmethod
     def open_for_metadata(filename):
         return RarArchive(filename, C_RAR_OM_LIST_INCSPLIT)
@@ -29,16 +30,20 @@ class RarArchive(object):
         return RarArchive(filename, C_RAR_OM_EXTRACT)
 
     def __init__(self, filename, mode):
-        archive = RAROpenArchiveDataEx(filename, mode)
-        self.handle = RAROpenArchiveEx(archive)
-        assert archive.OpenResult == C_ERAR_SUCCESS
+        self.archive = RAROpenArchiveDataEx(filename, mode)        
+        self.handle = RAROpenArchiveEx(self.archive)
+        assert self.archive.OpenResult == C_ERAR_SUCCESS
 
     def __enter__(self):
         return self
 
     def __exit__(self, type, value, traceback):
-        result = RARCloseArchive(self.handle)
+        result = RARCloseArchive(self.handle)        
         assert result == C_ERAR_SUCCESS
+
+    @property
+    def comment(self):
+        return ffi.string(self.archive.CmtBuf)
 
     def iterate_headers(self):
         header_data = RARHeaderDataEx()
@@ -121,9 +126,12 @@ class BadRarFile(Exception):
 
 
 def RAROpenArchiveDataEx(filename, mode):
+    COMMENT_MAX_SIZE = 64 * 1024
     return ffi.new("struct RAROpenArchiveDataEx *", {
         'ArcNameW': ffi.new("wchar_t[]", filename),
-        'OpenMode': mode
+        'OpenMode': mode,        
+        'CmtBuf': ffi.new("char[{}]".format(COMMENT_MAX_SIZE)),
+        'CmtBufSize': COMMENT_MAX_SIZE
     })
 
 def RARHeaderDataEx():

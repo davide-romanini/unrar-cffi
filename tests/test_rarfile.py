@@ -9,6 +9,10 @@ def rar():
     return RarFile(join(thisdir, 'test_rar.rar'))
 
 @fixture
+def rar_no_comment():
+    return RarFile(join(thisdir, 'test_no_cmt.rar'))
+
+@fixture
 def bad_rar():
     return RarFile(join(thisdir, 'test_corrupted.rar'))
 
@@ -38,6 +42,12 @@ def test_rar_open(rar):
     assert rar.open(rar.getinfo('test_file.txt')).read() == b'This is for test.'
     with raises(ValueError):
         rar.open('not_existing')
+
+def test_rar_comment(rar):
+    assert rar.comment == bytes('this is a test rar comment àòùç€\n', 'utf-8')
+
+def test_rar_comment_empty(rar_no_comment):
+    assert rar_no_comment.comment == b''
 
 def test_rar_testrar_good(rar):
     assert rar.testrar() == None

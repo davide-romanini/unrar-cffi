@@ -13,10 +13,12 @@ def is_rarfile(filename):
 class RarFile(object):
     def __init__(self, filename):
         """Load RAR archive file with mode read only "r"."""
+        self.comment = b''
         self.filename = filename
         self.infos = OrderedDict()
         
         with RarArchive.open_for_metadata(filename) as rar:
+            self.comment = rar.comment
             for header in rar.iterate_headers():
                 self.infos[header.FileNameW] = RarInfo(header)
                 header.skip()
