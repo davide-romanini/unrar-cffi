@@ -1,0 +1,41 @@
+language: python
+env:
+  global:
+    - PYTHON=python
+    - PIP=pip
+    - SETUPTOOLS_SCM_PRETEND_VERSION=$TRAVIS_TAG
+    - MAKE=make
+matrix:
+  include:
+    - os: linux
+    - os: osx
+      language: generic
+      osx_image: xcode8.3
+      env: PYTHON=python3 PIP=pip3 MACOSX_DEPLOYMENT_TARGET=10.11
+    - os: windows
+      language: bash
+      env: PATH=/C/Python37:/C/Python37/Scripts:$PATH MAKE=mingw32-make
+
+before_install:
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install -y python ; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew upgrade python3 ; fi
+script:
+  - $MAKE
+  - pytest
+  - $PYTHON setup.py bdist_wheel
+branches:
+  only:
+    - develop  
+    - "/^v\\d.*/"
+
+deploy:
+  name: $TRAVIS_TAG
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: TBD
+  file_glob: true
+  file: dist/*
+  draft: true
+  on:
+    tags: true
