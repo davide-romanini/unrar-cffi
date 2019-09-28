@@ -3,7 +3,7 @@ UNRAR_VERSION := 5.8.2
 all: unrarsrc
 	# generate header file from dll.hpp for cffi cdef()
 	cc -I unrarsrc -P -U __cplusplus -E unrarlib_py.h > unrarlib_py.preprocessed.h
-	python setup.py build_ext
+	python setup.py build_ext develop
 
 unrarsrc:
 	mkdir -p unrarsrc
