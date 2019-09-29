@@ -21,7 +21,7 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew upgrade python3 ; fi
 script:
   - $MAKE
-  - pytest
+  - $PYTHON setup.py test
   - $PYTHON setup.py bdist_wheel
 branches:
   only:
