@@ -30,9 +30,12 @@ class RarArchive(object):
         return RarArchive(filename, C_RAR_OM_EXTRACT)
 
     def __init__(self, filename, mode):
-        self.archive = RAROpenArchiveDataEx(filename, mode)        
-        self.handle = RAROpenArchiveEx(self.archive)
-        assert self.archive.OpenResult == C_ERAR_SUCCESS
+        self.comment = b''
+        archive = RAROpenArchiveDataEx(filename, mode)        
+        self.handle = RAROpenArchiveEx(archive)
+        if archive.OpenResult != C_ERAR_SUCCESS:
+            raise Exception("Cannot open {}: OpenResult is {}".format(filename, archive.OpenResult))
+        self.comment = ffi.string(archive.CmtBuf)
 
     def __enter__(self):
         return self
@@ -40,10 +43,6 @@ class RarArchive(object):
     def __exit__(self, type, value, traceback):
         result = RARCloseArchive(self.handle)        
         assert result == C_ERAR_SUCCESS
-
-    @property
-    def comment(self):
-        return ffi.string(self.archive.CmtBuf)
 
     def iterate_headers(self):
         header_data = RARHeaderDataEx()
