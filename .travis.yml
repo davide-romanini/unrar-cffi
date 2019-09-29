@@ -8,13 +8,13 @@ env:
 matrix:
   include:
     - os: linux
-    - os: osx
-      language: generic
-      osx_image: xcode8.3
-      env: PYTHON=python3 PIP=pip3 MACOSX_DEPLOYMENT_TARGET=10.11
-    - os: windows
-      language: bash
-      env: PATH=/C/Python37:/C/Python37/Scripts:$PATH MAKE=mingw32-make
+    #- os: osx
+    #  language: generic
+    #  osx_image: xcode8.3
+    #  env: PYTHON=python3 PIP=pip3 MACOSX_DEPLOYMENT_TARGET=10.11
+    #- os: windows
+    #  language: bash
+    #  env: PATH=/C/Python37:/C/Python37/Scripts:$PATH MAKE=mingw32-make
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install -y python ; fi
