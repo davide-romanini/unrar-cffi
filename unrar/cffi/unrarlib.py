@@ -32,10 +32,10 @@ class RarArchive(object):
     def __init__(self, filename, mode):
         self.comment = b''
         archive = RAROpenArchiveDataEx(filename, mode)        
-        self.handle = RAROpenArchiveEx(archive)
-        if archive.OpenResult != C_ERAR_SUCCESS:
+        self.handle = RAROpenArchiveEx(archive.value)
+        if archive.value.OpenResult != C_ERAR_SUCCESS:
             raise Exception("Cannot open {}: OpenResult is {}".format(filename, archive.OpenResult))
-        self.comment = ffi.string(archive.CmtBuf)
+        self.comment = ffi.string(archive.value.CmtBuf)
 
     def __enter__(self):
         return self
@@ -124,14 +124,20 @@ class BadRarFile(Exception):
     pass
 
 
-def RAROpenArchiveDataEx(filename, mode):
-    COMMENT_MAX_SIZE = 64 * 1024
-    return ffi.new("struct RAROpenArchiveDataEx *", {
-        'ArcNameW': ffi.new("wchar_t[]", filename),
-        'OpenMode': mode,        
-        'CmtBuf': ffi.new("char[{}]".format(COMMENT_MAX_SIZE)),
-        'CmtBufSize': COMMENT_MAX_SIZE
-    })
+class RAROpenArchiveDataEx(object):
+    def __init__(self, filename, mode):
+        COMMENT_MAX_SIZE = 64 * 1024
+        self.arcNameW = ffi.new("wchar_t[]", filename)
+        self.cmtBuf = ffi.new("char[{}]".format(COMMENT_MAX_SIZE))
+        self.value = ffi.new("struct RAROpenArchiveDataEx *", {
+            'ArcNameW': self.arcNameW,
+            'OpenMode': mode,        
+            'CmtBuf': self.cmtBuf,
+            'CmtBufSize': COMMENT_MAX_SIZE
+        })
+    
+    def value(self):
+        return self.value
 
 def RARHeaderDataEx():
     return ffi.new("struct RARHeaderDataEx *")
