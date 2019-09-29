@@ -7,5 +7,5 @@ all: unrarsrc
 
 unrarsrc:
 	mkdir -p unrarsrc
-	wget https://www.rarlab.com/rar/unrarsrc-$(UNRAR_VERSION).tar.gz -O -|tar -xz -C unrarsrc unrar --strip-components=1
+	curl https://www.rarlab.com/rar/unrarsrc-$(UNRAR_VERSION).tar.gz |tar -xz -C unrarsrc --strip-components=1
 	$(MAKE) -C unrarsrc lib
