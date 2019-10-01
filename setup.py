@@ -1,3 +1,4 @@
+from buildconf import DATA_FILES
 from setuptools import setup, find_packages
 
 setup(
@@ -17,7 +18,8 @@ setup(
     ],
     tests_require=[
         "pytest"
-    ],    
+    ],
+    data_files=DATA_FILES,
     cffi_modules=["buildcffi.py:builder"]      
 )
 
