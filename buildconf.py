@@ -2,7 +2,6 @@ import platform
 import subprocess
 from os import getenv
 from os.path import realpath, dirname, join
-from cffi import FFI
 from distutils import log
 from distutils.cmd import Command
 
@@ -72,7 +71,8 @@ class BuildUnrarCommand(Command):
         log.info("compiling unrar library")
         subprocess.run(BUILD_CMD, check=True) 
 
-def create_builder(): 
+def create_builder():
+    from cffi import FFI
     log.info("preprocessing extension headers")
     preprocess = subprocess.run(PREPROCESS_CMD, check=True, stdout=subprocess.PIPE, universal_newlines=True)
     
