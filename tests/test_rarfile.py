@@ -44,10 +44,10 @@ def test_rar_open(rar):
         rar.open('not_existing')
 
 def test_rar_comment(rar):
-    assert rar.comment == bytes('this is a test rar comment àòùç€\n', 'utf-8')
+    assert rar.comment == 'this is a test rar comment àòùç€\n'
 
 def test_rar_comment_empty(rar_no_comment):
-    assert rar_no_comment.comment == b''
+    assert rar_no_comment.comment == ''
 
 def test_rar_testrar_good(rar):
     assert rar.testrar() == None
