@@ -1,7 +1,7 @@
 UNRAR_VERSION := 5.8.2
-
+PYTHON ?= python
 all: unrarsrc
-	python setup.py build_unrar build_ext develop
+	$(PYTHON) setup.py build_unrar build_ext develop
 
 unrarsrc:
 	mkdir -p unrarsrc
