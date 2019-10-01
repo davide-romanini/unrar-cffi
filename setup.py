@@ -1,7 +1,10 @@
-from buildconf import DATA_FILES
-from setuptools import setup, find_packages
+from setuptools import setup
+from buildconf import BuildUnrarCommand
 
 setup(
+    cmdclass={
+        'build_unrar': BuildUnrarCommand
+    },
     name='unrar-cffi',
     use_scm_version=True,
     packages=(
@@ -19,7 +22,13 @@ setup(
     tests_require=[
         "pytest"
     ],
-    data_files=DATA_FILES,
-    cffi_modules=["buildcffi.py:builder"]      
+    package_dir={
+        'unrar.cffi': 'unrar/cffi'
+    },
+    package_data={
+        'unrar.cffi': ['*.dll']
+    },
+    include_package_data=True,
+    cffi_modules=["buildconf.py:create_builder"]  
 )
 
