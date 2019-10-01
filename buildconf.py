@@ -20,8 +20,8 @@ PREPROCESS_CMD = [
     getenv("CC", "cc"),
     "-I", UNRARSRC,
     "-P",
-    "-U ", "__cplusplus",
-    "-E", "unrarlib_py.h"
+    "-U", "__cplusplus",
+    "-E", "unrar/cffi/unrarlib_py.h"
 ]
 
 if platform.system() == 'Windows':
@@ -74,7 +74,7 @@ class BuildUnrarCommand(Command):
 
 def create_builder(): 
     log.info("preprocessing extension headers")
-    preprocess = subprocess.run(PREPROCESS_CMD, check=True, capture_output=True, universal_newlines=True)
+    preprocess = subprocess.run(PREPROCESS_CMD, check=True, stdout=subprocess.PIPE, universal_newlines=True)
     
     builder = FFI()
     builder.cdef(preprocess.stdout, packed=True)
