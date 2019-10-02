@@ -14,15 +14,16 @@ matrix:
       env: PYTHON=python3 PIP=pip3
     - os: windows
       language: bash
-      env: PATH=/C/Python37:/C/Python37/Scripts:$PATH MAKE=mingw32-make
+      env: PATH=/C/Python37:/C/Python37/Scripts:$PATH
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install -y python ; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew upgrade python3 ; fi
 script:
-  - $MAKE
-  - $PYTHON setup.py test
-  - $PYTHON setup.py bdist_wheel
+  - ./build.sh init
+  - ./build.sh build
+  - ./build.sh test
+  - ./build.sh package
 branches:
   only:
     - develop  

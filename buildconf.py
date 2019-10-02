@@ -27,7 +27,7 @@ if platform.system() == 'Windows':
     bits = platform.architecture()[0][0:2]
     build_platform = "x64" if bits == "64" else "Win32"
     build_dir = join(realpath(dirname(__file__)), "unrar/cffi")
-    build_platform_toolset = getenv("PLATFORM_TOOLSET", "v141_xp")
+    build_platform_toolset = getenv("PLATFORM_TOOLSET", "v141")
     SOURCE_PARAMETERS = {                    
         'library_dirs': [build_dir],
         'include_dirs': ["unrar/cffi", UNRARSRC],
