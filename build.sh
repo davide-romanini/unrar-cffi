@@ -4,6 +4,7 @@ set -o errexit
 
 PYTHON=${PYTHON:-python}
 UNRAR_VERSION="5.8.2"
+OS=${OS:-unix}
 
 init () {
     mkdir -p unrarsrc
