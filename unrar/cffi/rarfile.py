@@ -17,8 +17,8 @@ class RarFile(object):
         self.filename = filename
         self.infos = OrderedDict()
         
-        with RarArchive.open_for_metadata(filename) as rar:
-            self.comment = rar.comment
+        with RarArchive.open_for_metadata(filename) as rar:            
+            self.comment = rar.comment.encode()
             for header in rar.iterate_headers():
                 self.infos[header.FileNameW] = RarInfo(header)
                 header.skip()
