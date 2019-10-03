@@ -18,7 +18,7 @@ init () {
 
 build () {
     if [ "$OS" = "Windows_NT" ]; then
-        cmd "/C build_win.bat pip wheel . -w dist"
+        cmd "/C build_win.bat pip.exe wheel . -w dist"
     else
         $PIP wheel . -w dist
     fi
