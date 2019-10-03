@@ -13,7 +13,17 @@ matrix:
       - docker
     env: 
       - DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64 PLAT=manylinux1_x86_64
+  - os: linux
+    sudo: required
+    services:
+      - docker
+    env: 
       - DOCKER_IMAGE=quay.io/pypa/manylinux1_i686 PRE_CMD=linux32 PLAT=manylinux1_i686
+  - os: linux
+    sudo: required
+    services:
+      - docker
+    env: 
       - DOCKER_IMAGE=quay.io/pypa/manylinux2010_x86_64 PLAT=manylinux2010_x86_64
 
   - os: osx
@@ -26,12 +36,12 @@ matrix:
 before_install:
 - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install -y python ; fi
 - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew upgrade python3 ; fi
-- if [ "$TRAVIS_OS_NAME" = "linux"]; then docker pull $DOCKER_IMAGE ; fi
+- if [ "$TRAVIS_OS_NAME" = "linux" ]; then docker pull $DOCKER_IMAGE ; fi
 script:
 - "./build.sh init"
 - "./build.sh build"
 - "./build.sh test"
-- if [ "$TRAVIS_OS_NAME" = "linux"]; then ./build.sh manylinux ; fi
+- if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./build.sh manylinux ; fi
 - ls -l dist/unrar*cffi*manylinux*.whl
 - ls -l dist/unrar*cffi*.tar.gz
 
