@@ -3,36 +3,43 @@ set -o nounset
 set -o errexit
 
 PYTHON=${PYTHON:-python}
+PIP=${PIP:-pip}
 UNRAR_VERSION="5.8.2"
 OS=${OS:-unix}
+DOCKER_IMAGE=${DOCKER_IMAGE:-quay.io/pypa/manylinux2010_x86_64}
+PLAT=${PLAT:-manylinux2010_x86_64}
+PYTEST=${PYTEST:-pytest}
 
 init () {
+    $PIP install -r requirements.txt
     mkdir -p unrarsrc
 	curl https://www.rarlab.com/rar/unrarsrc-$UNRAR_VERSION.tar.gz |tar -xz -C unrarsrc --strip-components=1
 }
 
 build () {
     if [ "$OS" = "Windows_NT" ]; then
-        cmd "/C build_win.bat setup.py build_unrar build_ext"
+        cmd "/C build_win.bat $PIP wheel . -w dist"
     else
-        $PYTHON setup.py build_unrar build_ext
-    fi    
+        $PIP wheel . -w dist
+    fi
+    $PYTHON setup.py sdist
 }
 
 test () {
-    if [ "$OS" = "Windows_NT" ]; then
-        cmd "/C build_win.bat setup.py test"
-    else
-        $PYTHON setup.py test
-    fi    
+    $PIP install unrar-cffi --no-index -f dist/
+    $PYTEST
 }
 
-package () {
-    if [ "$OS" = "Windows_NT" ]; then
-        cmd "/C build_win.bat setup.py sdist bdist_wheel"
-    else
-        $PYTHON setup.py sdist bdist_wheel
-    fi
+manylinux () {
+    docker run --rm -t -v $PWD:/io -w /io $DOCKER_IMAGE \
+       sh -c 'for PYBIN in /opt/python/cp3*/bin; do export PIP="$PYBIN/pip" && ./build.sh build; done'
+    
+    docker run --rm -t -e PLAT=$PLAT -v $PWD:/io -w /io $DOCKER_IMAGE \
+       sh -c 'for whl in dist/*.whl; do auditwheel repair "$whl" --plat $PLAT -w dist/; done'
+
+    docker run --rm -t -v $PWD:/io -w /io $DOCKER_IMAGE \
+       sh -c 'for PYBIN in /opt/python/cp3*/bin; do export PIP="$PYBIN/pip" && export PYTEST="$PYBIN/pytest" && $PIP install -r requirements.txt && ./build.sh test; done'
+
 }
 
 "$@"

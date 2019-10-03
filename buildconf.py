@@ -69,15 +69,15 @@ class BuildUnrarCommand(Command):
 
     def run(self):
         log.info("compiling unrar library")
-        subprocess.run(BUILD_CMD, check=True) 
+        subprocess.check_call(BUILD_CMD) 
 
 def create_builder():
     from cffi import FFI
     log.info("preprocessing extension headers")
-    preprocess = subprocess.run(PREPROCESS_CMD, check=True, stdout=subprocess.PIPE, universal_newlines=True)
+    preprocess = subprocess.check_output(PREPROCESS_CMD, universal_newlines=True)
     
     builder = FFI()
-    builder.cdef(preprocess.stdout, packed=True)
+    builder.cdef(preprocess, packed=True)
 
     with open("unrar/cffi/unrarlib_ext.c") as f:
         builder.set_source("unrar.cffi._unrarlib", f.read(), **SOURCE_PARAMETERS)
