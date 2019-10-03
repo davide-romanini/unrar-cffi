@@ -18,7 +18,7 @@ init () {
 
 build () {
     if [ "$OS" = "Windows_NT" ]; then
-        cmd "/C build_win.bat $PIP wheel . -w dist"
+        cmd "/C build_win.bat pip wheel . -w dist"
     else
         $PIP wheel . -w dist
     fi
@@ -26,7 +26,7 @@ build () {
 }
 
 test () {
-    $PIP install unrar-cffi --no-index -f dist/
+    $PIP install unrar-cffi -f dist/
     $PYTEST
 }
 
