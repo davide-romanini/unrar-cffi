@@ -41,6 +41,7 @@ script:
 - "./build.sh init"
 - "./build.sh build"
 - "./build.sh test"
+- "./build.sh sdist"
 - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./build.sh manylinux ; fi
 - ls -l dist/unrar*cffi*manylinux*.whl
 - ls -l dist/unrar*cffi*.tar.gz

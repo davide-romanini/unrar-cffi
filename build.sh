@@ -18,16 +18,19 @@ init () {
 
 build () {
     if [ "$OS" = "Windows_NT" ]; then
-        cmd "/C build_win.bat pip.exe wheel . -w dist"
+        cmd "/C build_win.bat $PIP wheel . -w dist"
     else
         $PIP wheel . -w dist
     fi
-    $PYTHON setup.py sdist
 }
 
 test () {
     $PIP install unrar-cffi -f dist/
     $PYTEST
+}
+
+sdist () {
+    $PYTHON setup.py sdist
 }
 
 manylinux () {
