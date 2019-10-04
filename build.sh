@@ -9,6 +9,7 @@ OS=${OS:-unix}
 DOCKER_IMAGE=${DOCKER_IMAGE:-quay.io/pypa/manylinux2010_x86_64}
 PLAT=${PLAT:-manylinux2010_x86_64}
 PYTEST=${PYTEST:-pytest}
+SETUPTOOLS_SCM_PRETEND_VERSION=${SETUPTOOLS_SCM_PRETEND_VERSION:-}
 
 init () {
     $PIP install -r requirements.txt
@@ -35,7 +36,8 @@ sdist () {
 }
 
 manylinux () {
-    docker run --rm -t -v $PWD:/io -w /io $DOCKER_IMAGE \
+    docker run --rm -t -e SETUPTOOLS_SCM_PRETEND_VERSION=$SETUPTOOLS_SCM_PRETEND_VERSION \
+       -v $PWD:/io -w /io $DOCKER_IMAGE \
        sh -c 'for PYBIN in /opt/python/cp3*/bin; do export PIP="$PYBIN/pip" && ./build.sh build; done'
     
     docker run --rm -t -e PLAT=$PLAT -v $PWD:/io -w /io $DOCKER_IMAGE \
