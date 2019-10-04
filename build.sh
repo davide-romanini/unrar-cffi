@@ -18,13 +18,14 @@ init () {
 
 build () {
     if [ "$OS" = "Windows_NT" ]; then
-        cmd "/C build_win.bat $PIP wheel . -w dist"
+        cmd "/C build_win.bat $PIP wheel . -w dist --no-deps"
     else
-        $PIP wheel . -w dist
+        $PIP wheel . -w dist --no-deps
     fi
 }
 
 test () {
+    rm -Rf tests/__pycache__
     $PIP install unrar-cffi -f dist/
     $PYTEST
 }
