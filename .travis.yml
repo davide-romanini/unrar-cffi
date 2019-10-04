@@ -3,8 +3,11 @@ env:
   global:
   - PYTHON=python
   - PIP=pip
-  - SETUPTOOLS_SCM_PRETEND_VERSION=$TRAVIS_TAG
+  - SETUPTOOLS_SCM_PRETEND_VERSION=0.1.1rc1
   - MAKE=make
+  - TWINE_REPOSITORY_URL=https://test.pypi.org/legacy/
+  - TWINE_USERNAME=davide.romanini
+  # TWINE_PASSWORD
   - secure: F3rFwM8E3zNFJxReHRwg8mLCXjEn97tGvXraAVqJNl/Z/AOWRAaMXAYBN3Oiak4tZz6FlQ6wR8Ca/IyXjX18PLa6HJvcBdrYgS2ZarKoOMJ7FhewVbaNAb3N3OLCZhtsHpl2nkWgp5o9oXgcIHvyyOCeSgABKFo9dNGhvcbyTnftSxtpTE+U9vIyAnn0oLjY5FDkriQ5wVB22KuTsRZHeC9TAp/GPxY1obixKF7ap2HxFLDumh7CK6UIAXP/HjTelL/eHNkbXS/LQD0MKQ9jpuqdi/7m1n+yrCDDseYYK7vqej+3Hvw3QFSbEix8/q2H3/UQ53Hd80gyR/8Bs8D95LMPU7nkT98I2BxSd3iEHu6kEh2nwKVtDNKEBkndarLpuU8A+/UeGsuyaugX6DJamuYuuO+miBenzBfiHheCEGkjpcymv1CCJHMWxt9rcYfvUAfogXG1PNvic83R4ePwhKhamYYZ8JRgFpdKygZ5aUM/tIZpk8VSDWyJj0CrIaTEnZto5TFhQJRxH4TPg6ZKMrztlM+MQ7Wr9uJQ4GTZq/EtdmQBGCsBhD5RMLht3yrQJTq3P9LDUZOMzLeJ0Tw9D7lhzBXOyBDpLsq5F8lzvM1FlZL/yGlp3zYLoe3++7bvHLfN8eOU+AqOShcyMlWdWt7LogXuAY9E/IcJZCumaOo=
 matrix:
   include:
@@ -43,7 +46,10 @@ script:
 - "./build.sh test"
 - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./build.sh sdist ; fi
 - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./build.sh manylinux ; fi
-- ls -l dist/*
+- if [ "$TRAVIS_OS_NAME" = "osx" ]; then twine upload dist/* ; fi
+- if [ "$TRAVIS_OS_NAME" = "windows" ]; then twine upload dist/* ; fi
+- if [ "$TRAVIS_OS_NAME" = "linux" ]; then twine upload dist/*manylinux* ; fi
+
 branches:
   only:
   - develop
