@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/davide-romanini/unrar-cffi.svg?branch=develop)](https://travis-ci.org/davide-romanini/unrar-cffi)
 
-# unrar-cffi — Work with RAR files.
+# unrar-cffi -- Work with RAR files.
 
 ## Description
 
