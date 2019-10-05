@@ -18,10 +18,11 @@ init () {
 }
 
 build () {
+    destination=${1:-dist}
     if [ "$OS" = "Windows_NT" ]; then
-        cmd "/C build_win.bat $PIP wheel . -w dist --no-deps"
+        cmd "/C build_win.bat $PIP wheel . -w $destination --no-deps"
     else
-        $PIP wheel . -w dist --no-deps
+        $PIP wheel . -w $destination --no-deps
     fi
 }
 
@@ -31,21 +32,57 @@ test () {
     $PYTEST
 }
 
-sdist () {
-    $PYTHON setup.py sdist
+publish () {
+    twine upload dist/*
 }
 
-manylinux () {
-    docker run --rm -t -e SETUPTOOLS_SCM_PRETEND_VERSION=$SETUPTOOLS_SCM_PRETEND_VERSION \
-       -v $PWD:/io -w /io $DOCKER_IMAGE \
-       sh -c 'for PYBIN in /opt/python/cp3*/bin; do export PIP="$PYBIN/pip" && ./build.sh build; done'
-    
-    docker run --rm -t -e PLAT=$PLAT -v $PWD:/io -w /io $DOCKER_IMAGE \
-       sh -c 'for whl in dist/*.whl; do auditwheel repair "$whl" --plat $PLAT -w dist/; done'
+# to be run from ci system
+buildci () {
+    os=${1:-linux}
+    init
+    if [ "$os" = "linux" ]; then
+        $PYTHON setup.py sdist
+        within $DOCKER_IMAGE buildmanylinux dist
+    else
+        build dist
+    fi
+}
 
-    docker run --rm -t -v $PWD:/io -w /io $DOCKER_IMAGE \
-       sh -c 'for PYBIN in /opt/python/cp3*/bin; do export PIP="$PYBIN/pip" && export PYTEST="$PYBIN/pytest" && $PIP install -r requirements.txt && ./build.sh test; done'
+testci () {
+    os=${1:-linux}    
+    if [ "$os" = "linux" ]; then        
+        within $DOCKER_IMAGE testmanylinux
+    else
+        test
+    fi
+}
 
+within () {
+    image=${1:-$DOCKER_IMAGE}
+    shift
+    docker run --rm -t -e PLAT=$PLAT -e SETUPTOOLS_SCM_PRETEND_VERSION=$SETUPTOOLS_SCM_PRETEND_VERSION \
+       -v $PWD:/io -w /io $image ./build.sh $@
+}
+
+# to be run inside manylinux docker image
+buildmanylinux () {
+    destination=${1:-dist}
+    for PYBIN in /opt/python/cp3*/bin; do
+        PIP="$PYBIN/pip"
+        build /tmp
+    done
+    for whl in /tmp/*.whl; do 
+        auditwheel repair "$whl" --plat $PLAT -w $destination
+    done
+}
+
+testmanylinux () {
+    for PYBIN in /opt/python/cp3*/bin; do
+        PIP="$PYBIN/pip"
+        PYTEST="$PYBIN/pytest"
+        $PIP install pytest 
+        test
+    done
 }
 
 "$@"

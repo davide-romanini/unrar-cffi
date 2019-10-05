@@ -3,7 +3,7 @@ env:
   global:
   - PYTHON=python
   - PIP=pip
-  - SETUPTOOLS_SCM_PRETEND_VERSION=0.1.1rc1
+  - SETUPTOOLS_SCM_PRETEND_VERSION=$TRAVIS_TAG
   - MAKE=make
   - TWINE_REPOSITORY_URL=https://test.pypi.org/legacy/
   - TWINE_USERNAME=davide.romanini
@@ -41,14 +41,9 @@ before_install:
 - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew upgrade python3 ; fi
 - if [ "$TRAVIS_OS_NAME" = "linux" ]; then docker pull $DOCKER_IMAGE ; fi
 script:
-- "./build.sh init"
-- "./build.sh build"
-- "./build.sh test"
-- if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./build.sh sdist ; fi
-- if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./build.sh manylinux ; fi
-- if [ "$TRAVIS_OS_NAME" = "osx" ]; then twine upload dist/* ; fi
-- if [ "$TRAVIS_OS_NAME" = "windows" ]; then twine upload dist/* ; fi
-- if [ "$TRAVIS_OS_NAME" = "linux" ]; then twine upload dist/*manylinux* ; fi
+- ./build.sh buildci $TRAVIS_OS_NAME
+- ./build.sh testci $TRAVIS_OS_NAME
+- if [ -n "$TRAVIS_TAG" ]; then ./build.sh publish ; fi
 
 branches:
   only:
