@@ -42,7 +42,7 @@ buildci () {
     init
     if [ "$os" = "linux" ]; then
         $PYTHON setup.py sdist
-        within $DOCKER_IMAGE buildmanylinux dist
+        within $DOCKER_IMAGE buildmanylinux
     else
         build dist
     fi
@@ -61,18 +61,17 @@ within () {
     image=${1:-$DOCKER_IMAGE}
     shift
     docker run --rm -t -e PLAT=$PLAT -e SETUPTOOLS_SCM_PRETEND_VERSION=$SETUPTOOLS_SCM_PRETEND_VERSION \
-       -v $PWD:/io -w /io $image ./build.sh $@
+       -v $PWD:/io -w /io $image ./build.sh "$@"
 }
 
 # to be run inside manylinux docker image
 buildmanylinux () {
-    destination=${1:-dist}
     for PYBIN in /opt/python/cp3*/bin; do
         PIP="$PYBIN/pip"
         build /tmp
     done
     for whl in /tmp/*.whl; do 
-        auditwheel repair "$whl" --plat $PLAT -w $destination
+        auditwheel repair "$whl" --plat $PLAT -w dist/
     done
 }
 
