@@ -4,11 +4,10 @@ env:
   - PYTHON=python
   - PIP=pip
   - SETUPTOOLS_SCM_PRETEND_VERSION=$TRAVIS_TAG
-  - MAKE=make
-  - TWINE_REPOSITORY_URL=https://test.pypi.org/legacy/
+  - MAKE=make  
   - TWINE_USERNAME=davide.romanini
-  # TWINE_PASSWORD
-  - secure: F3rFwM8E3zNFJxReHRwg8mLCXjEn97tGvXraAVqJNl/Z/AOWRAaMXAYBN3Oiak4tZz6FlQ6wR8Ca/IyXjX18PLa6HJvcBdrYgS2ZarKoOMJ7FhewVbaNAb3N3OLCZhtsHpl2nkWgp5o9oXgcIHvyyOCeSgABKFo9dNGhvcbyTnftSxtpTE+U9vIyAnn0oLjY5FDkriQ5wVB22KuTsRZHeC9TAp/GPxY1obixKF7ap2HxFLDumh7CK6UIAXP/HjTelL/eHNkbXS/LQD0MKQ9jpuqdi/7m1n+yrCDDseYYK7vqej+3Hvw3QFSbEix8/q2H3/UQ53Hd80gyR/8Bs8D95LMPU7nkT98I2BxSd3iEHu6kEh2nwKVtDNKEBkndarLpuU8A+/UeGsuyaugX6DJamuYuuO+miBenzBfiHheCEGkjpcymv1CCJHMWxt9rcYfvUAfogXG1PNvic83R4ePwhKhamYYZ8JRgFpdKygZ5aUM/tIZpk8VSDWyJj0CrIaTEnZto5TFhQJRxH4TPg6ZKMrztlM+MQ7Wr9uJQ4GTZq/EtdmQBGCsBhD5RMLht3yrQJTq3P9LDUZOMzLeJ0Tw9D7lhzBXOyBDpLsq5F8lzvM1FlZL/yGlp3zYLoe3++7bvHLfN8eOU+AqOShcyMlWdWt7LogXuAY9E/IcJZCumaOo=
+  # TWINE_PASSOWRD
+  - secure: ANOvmeQluy3ZA7Ds08oJe11Ge2bSAIbepZyG0UbTscBh5YWhl7a5XTlL5obPXsNfJCo7nNpz/wQshpMNHhuNiKgJ9r2Pgyd7n7/iuoFWBLCVW5gP8811ThhHrP5sb3ayujWjYHIodV+QpnHFmgSoJKNs81qox7oczJ/KOksUOHx9u1FLPGCHqoANBpQA2ItxIhAQJFSLpVpIQIASl6zSlr0wXTkD9I60TJhRFykmlfxw4zvsc4Y7I3a/xgCHD7Z6T+9nPzdYf1+x9LbuNOxpJGnH632gIzkOoJsW26Q+rsGJamYjt0Q8y1Z+CzESDE37VDYPM84ZjdO7vtmeMdV/QTOHnXXsoh9WaycKM2sF4jQGmjeiahEArz7yQ5uu0QR6EAa1s2tzG7UG1oBCwbjwn+AniL+G6QpKwvOGfZXC8SCffRB3k24J1X6CexDWMbuZ3WKeOb4Rj1Z4paF2NN1xYj/wxBG9N93xxlLPZRPaCLRAJZBz3AMf13D9+8ytifaEFNSmGnGFCgRukGHHTv7ggVPyWsFnIGcP608tsY16mFo8uxT3CN3lEiMUS9rqJ4MxTN5LVr2J+3X4/o2b1sD9VyTBQz8T9PG0Rf1fJP8DUKT+C09Q4ERathT1cOQiZm1fZVwYOVIIYOSbE2FpC5xojq1vvaAoS1DURhDyrCGews4=
 matrix:
   include:
   - os: linux
@@ -41,10 +40,9 @@ before_install:
 - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew upgrade python3 ; fi
 - if [ "$TRAVIS_OS_NAME" = "linux" ]; then docker pull $DOCKER_IMAGE ; fi
 script:
-- ./build.sh buildci $TRAVIS_OS_NAME
-- ./build.sh testci $TRAVIS_OS_NAME
+- "./build.sh buildci $TRAVIS_OS_NAME"
+- "./build.sh testci $TRAVIS_OS_NAME"
 - if [ -n "$TRAVIS_TAG" ]; then ./build.sh publish ; fi
-
 branches:
   only:
   - develop
