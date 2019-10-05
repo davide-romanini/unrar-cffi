@@ -33,7 +33,7 @@ test () {
 }
 
 publish () {
-    twine upload dist/*
+    twine upload --skip-existing dist/*
 }
 
 # to be run from ci system
