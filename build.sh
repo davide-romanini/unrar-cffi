@@ -41,7 +41,7 @@ buildci () {
     os=${1:-linux}
     init
     if [ "$os" = "linux" ]; then
-        $PYTHON setup.py sdist
+        $PYTHON setup.py sdist --formats=gztar,zip
         within $DOCKER_IMAGE buildmanylinux
     else
         build dist
