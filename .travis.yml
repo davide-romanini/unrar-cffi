@@ -36,8 +36,8 @@ matrix:
     language: bash
     env: PATH=/C/Python37:/C/Python37/Scripts:$PATH
 before_install:
-- if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install -y python ; fi
-- if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew upgrade python3 ; fi
+- if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install -y python --version=3.7.8 ; fi
+- if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew upgrade python@3.7 ; fi
 - if [ "$TRAVIS_OS_NAME" = "linux" ]; then docker pull $DOCKER_IMAGE ; fi
 script:
 - "./build.sh buildci $TRAVIS_OS_NAME"

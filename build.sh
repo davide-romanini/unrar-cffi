@@ -66,7 +66,7 @@ within () {
 
 # to be run inside manylinux docker image
 buildmanylinux () {
-    for PYBIN in /opt/python/cp3*/bin; do
+    for PYBIN in /opt/python/cp3[5,6,7,8]*/bin; do
         PIP="$PYBIN/pip"
         build /tmp
     done
@@ -76,7 +76,7 @@ buildmanylinux () {
 }
 
 testmanylinux () {
-    for PYBIN in /opt/python/cp3*/bin; do
+    for PYBIN in /opt/python/cp3[5,6,7,8]*/bin; do
         PIP="$PYBIN/pip"
         PYTEST="$PYBIN/pytest"
         $PIP install pytest 
