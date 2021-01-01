@@ -34,7 +34,7 @@ def test_open_not_existing():
         RarFile(join(thisdir, 'non_existing.rar'))
 
 def test_rar_namelist(rar):
-    assert rar.namelist() == ['test_file.txt', 'test_file2.txt', 'testdir/testfile', 'testdir']
+    assert rar.namelist() == ['test_file.txt', 'test_file2.txt', join('testdir', 'testfile'), 'testdir']
 
 def test_rar_read(rar):
     assert rar.read('test_file.txt') == b'This is for test.'
@@ -97,5 +97,5 @@ def test_rar_getinfo(rar, info_test_file_txt):
         rar.getinfo('not_existing')
 
 def test_rar_is_dir(rar):
-    assert rar.getinfo('testdir/testfile').is_dir() == False
+    assert rar.getinfo(join('testdir', 'testfile')).is_dir() == False
     assert rar.getinfo('testdir').is_dir()
