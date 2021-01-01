@@ -34,7 +34,7 @@ class RarArchive(object):
         archive = RAROpenArchiveDataEx(filename, mode)        
         self.handle = RAROpenArchiveEx(archive.value)
         if archive.value.OpenResult != C_ERAR_SUCCESS:
-            raise Exception("Cannot open {}: OpenResult is {}".format(filename, archive.OpenResult))
+            raise BadRarFile("Cannot open {}: OpenResult is {}".format(filename, archive.value.OpenResult))
         self.comment = ffi.string(archive.value.CmtBufW)
 
     def __enter__(self):
@@ -122,7 +122,6 @@ class RarHeader(object):
         
 class BadRarFile(Exception):
     pass
-
 
 class RAROpenArchiveDataEx(object):
     def __init__(self, filename, mode):

@@ -1,6 +1,6 @@
 from os.path import realpath, dirname, join
 from pytest import fixture, raises
-from unrar.cffi.rarfile import is_rarfile, RarFile
+from unrar.cffi.rarfile import is_rarfile, RarFile, RarFileError
 
 thisdir = realpath(dirname(__file__))
 
@@ -28,6 +28,10 @@ def test_is_rarfile_bad():
 def test_is_rarfile_not_existing():
     non_existing = join(thisdir, 'non_existing.rar')
     assert is_rarfile(non_existing) == False
+
+def test_open_not_existing():
+    with raises(RarFileError):
+        RarFile(join(thisdir, 'non_existing.rar'))
 
 def test_rar_namelist(rar):
     assert rar.namelist() == ['test_file.txt', 'test_file2.txt']

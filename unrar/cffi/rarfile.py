@@ -2,6 +2,9 @@ import io
 from collections import OrderedDict
 from .unrarlib import RarArchive, BadRarFile
 
+class RarFileError(Exception):
+    pass
+
 def is_rarfile(filename):
     """Return true if file is a valid RAR file."""
     try:
@@ -17,11 +20,14 @@ class RarFile(object):
         self.filename = filename
         self.infos = OrderedDict()
         
-        with RarArchive.open_for_metadata(filename) as rar:            
-            self.comment = rar.comment.encode()
-            for header in rar.iterate_headers():
-                self.infos[header.FileNameW] = RarInfo(header)
-                header.skip()
+        try:
+            with RarArchive.open_for_processing(filename) as rar:            
+                self.comment = rar.comment.encode()
+                for header in rar.iterate_headers():
+                    self.infos[header.FileNameW] = RarInfo(header)
+                    header.skip()             
+        except BadRarFile as err:
+            raise RarFileError("Error opening rar: {0}".format(err))
 
     def namelist(self):
         return list(self.infos.keys())
