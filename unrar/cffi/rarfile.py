@@ -1,6 +1,6 @@
 import io
 from collections import OrderedDict
-from .unrarlib import RarArchive, BadRarFile
+from .unrarlib import RarArchive, BadRarFile, FLAGS_RHDF_DIRECTORY
 
 class RarFileError(Exception):
     pass
@@ -86,6 +86,9 @@ class RarInfo(object):
         self.CRC = header.FileCRC
         self.flag_bits = header.Flags
         self.compress_type = header.Method
+
+    def is_dir(self):
+        return self.flag_bits & FLAGS_RHDF_DIRECTORY
 
 # see https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-dosdatetimetofiletime
 def dostime_to_timetuple(dostime):
