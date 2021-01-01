@@ -12,7 +12,10 @@ from ._unrarlib.lib import \
     C_RAR_SKIP, \
     C_RAR_TEST, \
     C_RAR_EXTRACT, \
-    C_ERAR_SUCCESS    
+    C_ERAR_SUCCESS, \
+    C_RHDF_DIRECTORY
+
+FLAGS_RHDF_DIRECTORY = C_RHDF_DIRECTORY
 
 @ffi.def_extern('PyUNRARCALLBACKStub')
 def PyUNRARCALLBACKSkeleton(msg, user_data, p1, p2):    
