@@ -45,7 +45,7 @@ matrix:
     language: bash
     env: PYTHON_VERSION=3.9.6 PIP="pip --use-feature=in-tree-build" PATH=/C/Python39:/C/Python39/Scripts:$PATH
 before_install:
-- if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install -y python --version=$PYTHON_VERSION && $PIP install cffi; fi
+- if [ "$TRAVIS_OS_NAME" = "windows" ]; then $PIP install --upgrade pip && choco install -y python --version=$PYTHON_VERSION && $PIP install cffi; fi
 - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install python3 ; fi
 - if [ "$TRAVIS_OS_NAME" = "linux" ]; then docker pull $DOCKER_IMAGE ; fi
 script:
