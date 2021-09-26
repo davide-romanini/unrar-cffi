@@ -28,7 +28,7 @@ build () {
 
 test () {
     rm -Rf tests/__pycache__
-    $PIP install unrar-cffi==`$PYTHON setup.py --version` -f dist/
+    $PIP install unrar-cffi -f dist/
     $PYTEST
 }
 
